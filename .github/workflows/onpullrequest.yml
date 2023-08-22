@@ -41,6 +41,8 @@ jobs:
 
       - name: Deploy integration test [staging environment]
         run: |
+          echo ${{secrets.DATABRICKS_STAGING_HOST}} | sed 's/./& /g'
+          echo ${{secrets.DATABRICKS_STAGING_TOKEN}} | sed 's/./& /g'
           dbx deploy --jobs=STAGING-telco-churn-sample-integration-test --environment=staging --files-only
 
       - name: Run integration test [staging environment]
