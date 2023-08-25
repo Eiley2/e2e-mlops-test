@@ -107,9 +107,8 @@ class ModelTrain:
         """
         feature_store_table_cfg = self.cfg.feature_store_table_cfg
         labels_table_cfg = self.cfg.labels_table_cfg
-        labels_df = spark.table("s3a://laika-models-ds-dev/tags/raw/__unitystorage/schemas/07686523-4793-442c-b80f-8f0bb3a8dea3/tables/0bbaeb1c-6c9d-4198-b3be-50a72cf82c53")
-        labels_df.printSchema()
-        labels_df.show()
+        labels_df = spark.read.table("laika_models_ds_tags_dev.raw.master_tags")
+        print(labels_df)
 
         feature_table_lookup = self._get_feature_table_lookup()
         _logger.info('Creating Feature Store training set...')
