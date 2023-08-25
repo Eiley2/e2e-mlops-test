@@ -105,4 +105,7 @@ class Featurizer:
             _logger.info(f"Dropping missing values")
             preproc_df = self.drop_missing_values(preproc_df)
 
+        preproc_df.printSchema()
+        preproc_df.show()
+
         return preproc_df
