@@ -1,12 +1,5 @@
 input_table: "laika_models_ds_tags_dev.raw.master_tags"
 
 data_prep_params:
-  label_col: "churnString"
-  ohe: False
-  #  # Only require cat_cols if ohe=True
-  #  cat_cols: ['gender', 'partner', 'dependents',
-  #             'phoneService', 'multipleLines', 'internetService',
-  #             'onlineSecurity', 'onlineBackup', 'deviceProtection',
-  #             'techSupport', 'streamingTV', 'streamingMovies',
-  #             'contract', 'paperlessBilling', 'paymentMethod']
-  drop_missing: False
+  drop_missing: True
+  value_name: "COL"

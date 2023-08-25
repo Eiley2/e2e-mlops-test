@@ -3,16 +3,16 @@ Module containing common data classes used throughout different pipelines, in ad
 extended to run pipelines/tasks.
 """
 import os
-import sys
-from dataclasses import dataclass
-
-import yaml
 import pathlib
-import dotenv
+import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from logging import Logger
-from typing import Dict, Any, Union, List
+from typing import Any, Dict, List, Union
+
+import dotenv
+import yaml
 from pyspark.sql import SparkSession
 
 
@@ -33,6 +33,7 @@ class MLflowTrackingConfig:
             Name of the registered model under which to create a new model version. If a registered model with the given
             name does not exist, it will be created automatically.
     """
+
     run_name: str
     experiment_id: int = None
     experiment_path: str = None
@@ -56,12 +57,15 @@ class FeatureStoreTableConfig:
             [Optional] string containing description to attribute to the feature table in the Feature Store.
             Only used when creating a Feature Store table.
     """
+
+    catalog_name: str
     database_name: str
     table_name: str
     primary_keys: Union[str, List[str]]
     description: str = None
 
 
+# <------------ ESTO POSBILEMENTE NO LO NECESITO -------------->
 @dataclass
 class LabelsTableConfig:
     """
@@ -79,6 +83,7 @@ class LabelsTableConfig:
         dbfs_path (str)
             [Optional] DBFS path to use for the labels table (saving as a Delta table)
     """
+
     database_name: str
     table_name: str
     label_col: str
@@ -97,6 +102,7 @@ class Workload(ABC):
     * self.conf provides access to the parsed configuration of the job
     * self.env_vars provides access to the parsed environment variables of the job
     """
+
     def __init__(self, spark=None, init_conf=None):
         self.spark = self._prepare_spark(spark)
         self.logger = self._prepare_logger()
@@ -121,11 +127,11 @@ class Workload(ABC):
         try:
             from pyspark.dbutils import DBUtils  # noqa
 
-            if 'dbutils' not in locals():
+            if "dbutils" not in locals():
                 utils = DBUtils(spark)
                 return utils
             else:
-                return locals().get('dbutils')
+                return locals().get("dbutils")
         except ImportError:
             return None
 
@@ -133,29 +139,32 @@ class Workload(ABC):
         utils = self._get_dbutils(self.spark)
 
         if not utils:
-            self.logger.warn('No DBUtils defined in the runtime')
+            self.logger.warn("No DBUtils defined in the runtime")
         else:
-            self.logger.info('DBUtils class initialized')
+            self.logger.info("DBUtils class initialized")
 
         return utils
 
     def _provide_config(self):
-        self.logger.info('Reading configuration from --conf-file job option')
+        self.logger.info("Reading configuration from --conf-file job option")
         conf_file = self._get_conf_file()
         if not conf_file:
             self.logger.info(
-                'No conf file was provided, setting configuration to empty dict.'
-                'Please override configuration in subclass init method'
+                "No conf file was provided, setting configuration to empty"
+                " dict.Please override configuration in subclass init method"
             )
             return {}
         else:
-            self.logger.info(f'Conf file was provided, reading configuration from {conf_file}')
+            self.logger.info(
+                "Conf file was provided, reading configuration from"
+                f" {conf_file}"
+            )
             return self._read_config(conf_file)
 
     @staticmethod
     def _get_conf_file():
         p = ArgumentParser()
-        p.add_argument('--conf-file', required=False, type=str)
+        p.add_argument("--conf-file", required=False, type=str)
         namespace = p.parse_known_args(sys.argv[1:])[0]
         return namespace.conf_file
 
@@ -167,14 +176,14 @@ class Workload(ABC):
     @staticmethod
     def _get_base_data_params():
         p = ArgumentParser()
-        p.add_argument('--base-data-params', required=False, type=str)
+        p.add_argument("--base-data-params", required=False, type=str)
         namespace = p.parse_known_args(sys.argv[1:])[0]
         return namespace.base_data_params
 
     @staticmethod
     def _get_env():
         p = ArgumentParser()
-        p.add_argument('--env', required=False, type=str)
+        p.add_argument("--env", required=False, type=str)
         namespace = p.parse_known_args(sys.argv[1:])[0]
         return namespace.env
 
@@ -197,15 +206,19 @@ class Workload(ABC):
 
     def _log_conf(self):
         # log parameters
-        self.logger.info('Launching job with configuration parameters:')
+        self.logger.info("Launching job with configuration parameters:")
         for key, item in self.conf.items():
-            self.logger.info('\t Parameter: %-30s with value => %-30s' % (key, item))
+            self.logger.info(
+                "\t Parameter: %-30s with value => %-30s" % (key, item)
+            )
 
     def _log_env_vars(self):
         # log parameters
-        self.logger.info('Using environment variables:')
+        self.logger.info("Using environment variables:")
         for key, item in self.env_vars.items():
-            self.logger.info('\t Parameter: %-30s with value => %-30s' % (key, item))
+            self.logger.info(
+                "\t Parameter: %-30s with value => %-30s" % (key, item)
+            )
 
     @abstractmethod
     def launch(self):
