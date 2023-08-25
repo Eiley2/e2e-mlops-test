@@ -128,7 +128,7 @@ class Featurizer:
         _logger.info('Running Data Preprocessing steps...')
 
         # Convert Spark DataFrame to pandas on Spark DataFrame
-        psdf = df.pandas_api()
+        """ psdf = df.pandas_api()
 
         # Convert label to int and rename column
         _logger.info(f'Processing label: {self.cfg.label_col}')
@@ -151,6 +151,7 @@ class Featurizer:
             psdf = self.drop_missing_values(psdf)
 
         # Return as Spark DataFrame
-        preproc_df = psdf.to_spark()
-
-        return preproc_df
+        preproc_df = psdf.to_spark() """
+        print(df)
+        exit()
+        return null
