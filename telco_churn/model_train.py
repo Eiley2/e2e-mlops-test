@@ -1,17 +1,18 @@
-from dataclasses import dataclass
-from typing import List, Dict, Any
 import pprint
-
-import pandas as pd
-import sklearn
-from sklearn.model_selection import train_test_split
-import mlflow
-from mlflow.models import infer_signature
+from dataclasses import dataclass
+from time import clock_getres
+from typing import Any, Dict, List
 
 import databricks
-from databricks.feature_store import FeatureStoreClient, FeatureLookup
+import mlflow
+import pandas as pd
+import sklearn
+from databricks.feature_store import FeatureLookup, FeatureStoreClient
+from mlflow.models import infer_signature
+from sklearn.model_selection import train_test_split
 
-from telco_churn.common import MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
+from telco_churn.common import (FeatureStoreTableConfig, LabelsTableConfig,
+                                MLflowTrackingConfig)
 from telco_churn.model_train_pipeline import ModelTrainPipeline
 from telco_churn.utils.get_spark import spark
 from telco_churn.utils.logger_utils import get_logger
@@ -106,7 +107,8 @@ class ModelTrain:
         """
         feature_store_table_cfg = self.cfg.feature_store_table_cfg
         labels_table_cfg = self.cfg.labels_table_cfg
-        labels_df = spark.table(f'{labels_table_cfg.database_name}.{labels_table_cfg.table_name}')
+        labels_df = spark.table("laika_models_ds_tags_dev.raw.master_tags")
+        print(labels_df)
 
         feature_table_lookup = self._get_feature_table_lookup()
         _logger.info('Creating Feature Store training set...')
