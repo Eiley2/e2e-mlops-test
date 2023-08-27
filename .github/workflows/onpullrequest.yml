@@ -5,18 +5,17 @@ on:
     branches:
       - main
     tags-ignore:
-      - 'v*' # this tag type is used for release pipelines
+      - "v*" # this tag type is used for release pipelines
 
 jobs:
   ci-pipeline:
-
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
 
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_STAGING_HOST }}
-      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_STAGING_TOKEN }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_STAGING_TOKEN }}
 
     steps:
       - uses: actions/checkout@v3
@@ -24,7 +23,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: 3.9.5
+          python-version: 3.9
 
       - name: Install pip
         run: |
