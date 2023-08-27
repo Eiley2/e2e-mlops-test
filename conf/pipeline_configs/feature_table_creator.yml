@@ -1,5 +1,12 @@
-input_table: "laika_models_ds_tags_dev.raw.master_tags"
+input_table: "laika_models_ds_tags_dev.ibm_telco_churn.bronze_customers"
 
 data_prep_params:
-  drop_missing: True
-  value_name: "COL"
+  label_col: "Churn Label"
+  ohe: False
+  #  # Only require cat_cols if ohe=True
+  #  cat_cols: ['gender', 'partner', 'dependents',
+  #             'phoneService', 'multipleLines', 'internetService',
+  #             'onlineSecurity', 'onlineBackup', 'deviceProtection',
+  #             'techSupport', 'streamingTV', 'streamingMovies',
+  #             'contract', 'paperlessBilling', 'paymentMethod']
+  drop_missing: False

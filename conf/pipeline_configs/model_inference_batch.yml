@@ -4,7 +4,7 @@ mlflow_params:
 data_input:
   # Require DataFrame to score the model on - must contain column(s) for lookup keys
   # to join feature data from Feature Store
-  table_name: "laika_models_ds_tags_dev.raw.master_tags"
+  table_name: "laika_models_ds_tags_dev.e2e_mlops_prod.churn_labels"
 
 data_output:
   mode: "overwrite"
