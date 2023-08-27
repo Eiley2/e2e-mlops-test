@@ -60,7 +60,7 @@ class FeatureStoreTableConfig:
             Only used when creating a Feature Store table.
     """
 
-    catalog_name: str
+    # catalog_name: str
     database_name: str
     table_name: str
     primary_keys: Union[str, List[str]]
