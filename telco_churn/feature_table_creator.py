@@ -166,7 +166,6 @@ class FeatureTableCreator:
 
         _logger.info('==========Data Prep==========')
         proc_df = self.run_data_prep(input_df)
-        raise Exception("TEST")
 
         _logger.info('==========Create Feature Table==========')
         self.run_feature_table_create(proc_df)

@@ -46,6 +46,8 @@ class FeatureStoreTableConfig:
     Configuration data class used to unpack parameters when creating or loading a Feature Store table.
 
     Attributes:
+        catalog_name (str)
+            Name of catalog to use for creating the feature table
         database_name (str)
             Name of database to use for creating the feature table
         table_name (str)
