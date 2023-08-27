@@ -30,7 +30,6 @@ class ModelTrainJob(Workload):
 
     def _get_feature_store_table_cfg(self):
         return FeatureStoreTableConfig(
-            catalog_name=self.env_vars["feature_store_catalog_name"],
             database_name=self.env_vars["feature_store_database_name"],
             table_name=self.env_vars["feature_store_table_name"],
             primary_keys=self.env_vars["feature_store_table_primary_keys"],
