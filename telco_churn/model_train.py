@@ -215,8 +215,8 @@ class ModelTrain:
             # Fit pipeline with RandomForestClassifier
             _logger.info('==========Fitting RandomForestClassifier model==========')
             model = self.fit_pipeline(X_train, y_train)
-
             # Log model using Feature Store API
+            _logger.info(str(mlflow.__version__))
             _logger.info('Logging model to MLflow using Feature Store API')
             fs.log_model(
                 model,
@@ -225,13 +225,18 @@ class ModelTrain:
                 training_set=fs_training_set,
                 input_example=X_train[:100],
                 signature=infer_signature(X_train, y_train))
+            
+            model_info = mlflow.sklearn.log_model(
+                model, 
+                "fs_model",
+                signature=infer_signature(X_train, y_train),
+                input_example=X_train[:100],
+            )
 
             # Training metrics are logged by MLflow autologging
             # Log metrics for the test set
             _logger.info('==========Model Evaluation==========')
             _logger.info('Evaluating and logging metrics')
-
-            model_info = mlflow.sklearn.log_model(model, "fs_model")
 
             eval_data = X_test
             eval_data["churn"] = y_test
@@ -251,5 +256,18 @@ class ModelTrain:
                 _logger.info(f'Registering model: {mlflow_tracking_cfg.model_name}')
                 mlflow.register_model(f'runs:/{mlflow_run.info.run_id}/fs_model',
                                       name=mlflow_tracking_cfg.model_name)
+                
+                _logger.info(f'Setting stating to new model: {mlflow_tracking_cfg.model_name}')
+                client = mlflow.MlflowClient()
+                last_model_version = client.get_latest_versions(
+                    name=mlflow_tracking_cfg.model_name, stages=["None"]
+                    )[0]
+                client.transition_model_version_stage(
+                    name=mlflow_tracking_cfg.model_name,
+                    version=last_model_version.version,
+                    stage="staging",
+                    archive_existing_versions=True
+                )
+
 
         _logger.info('==========Model training completed==========')
