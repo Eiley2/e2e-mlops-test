@@ -31,6 +31,9 @@ def create_and_write_feature_table(df: pyspark.sql.DataFrame,
     """
     fs = FeatureStoreClient()
 
+    for col in df.columns:
+        df = df.withColumnRenamed(col, col.replace(' ', '').replace('(', '_').replace(')', ''))
+
     feature_table = fs.create_table(
         name=feature_table_name,
         primary_keys=primary_keys,

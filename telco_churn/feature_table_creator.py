@@ -115,6 +115,7 @@ class FeatureTableCreator:
         features_df = df.drop(self.cfg.labels_table_cfg.label_col)
         feature_table_name = f'{feature_store_table_cfg.database_name}.{feature_store_table_cfg.table_name}'
         _logger.info(f'Creating and writing features to feature table: {feature_table_name}')
+        
         feature_store_utils.create_and_write_feature_table(features_df,
                                                            feature_table_name,
                                                            primary_keys=feature_store_table_cfg.primary_keys,
@@ -124,8 +125,7 @@ class FeatureTableCreator:
         """
         Method to create labels table. This table will consist of the columns primary_key, label_col
 
-        Create table using params specified in labels_table_cfg. Will create Delta table at dbfs_path, and further
-        create a table using this Delta location.
+        Create table using params specified in labels_table_cfg. Will create Delta table
 
         Parameters
         ----------
@@ -146,15 +146,18 @@ class FeatureTableCreator:
 
         labels_database_name = labels_table_cfg.database_name
         labels_table_name = labels_table_cfg.table_name
-        labels_dbfs_path = labels_table_cfg.dbfs_path
+
         # Create database if not exists, drop table if it already exists
         self.setup(database_name=labels_database_name, table_name=labels_table_name)
         # DataFrame of customerID/churn labels
         labels_df = df.select(labels_table_cols)
-        _logger.info(f'Writing labels to DBFS: {labels_dbfs_path}')
-        labels_df.write.format('delta').mode('overwrite').save(labels_dbfs_path)
-        spark.sql(f"""CREATE TABLE {labels_database_name}.{labels_table_name}
-                      USING DELTA LOCATION '{labels_dbfs_path}';""")
+
+        labels_df.createOrReplaceTempView(labels_table_name)
+
+        permanent_table_name = f'{labels_database_name}.{labels_table_name}'
+        spark.sql(f"USE {labels_database_name}")
+        labels_df.write.format("delta").saveAsTable(permanent_table_name)
+        
         _logger.info(f'Created labels table: {labels_database_name}.{labels_table_name}')
 
     def run(self) -> None:

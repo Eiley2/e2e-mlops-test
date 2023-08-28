@@ -1,3 +1,5 @@
+# flake8: noqa
+
 import pprint
 from dataclasses import dataclass
 from typing import Any, Dict, List
@@ -228,8 +230,20 @@ class ModelTrain:
             # Log metrics for the test set
             _logger.info('==========Model Evaluation==========')
             _logger.info('Evaluating and logging metrics')
-            test_metrics = mlflow.evalute(model, data=X_test, targets=y_test, model_type='classifier')
-            print(pd.DataFrame(test_metrics, index=[0]))
+
+            model_info = mlflow.sklearn.log_model(model, "fs_model")
+
+            eval_data = X_test
+            eval_data["churn"] = y_test
+
+            test_metrics = mlflow.evaluate(
+                model_info.model_uri, 
+                eval_data, 
+                targets="churn",
+                model_type='classifier',
+                evaluators=["default"])
+            
+            pprint.pprint(test_metrics.metrics)
 
             # Register model to MLflow Model Registry if provided
             if mlflow_tracking_cfg.model_name is not None:
