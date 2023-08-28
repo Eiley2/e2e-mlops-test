@@ -257,7 +257,7 @@ class ModelTrain:
                 mlflow.register_model(f'runs:/{mlflow_run.info.run_id}/fs_model',
                                       name=mlflow_tracking_cfg.model_name)
                 
-                _logger.info(f'Setting stating to new model: {mlflow_tracking_cfg.model_name}')
+                _logger.info(f'Setting staging stage to the new model: {mlflow_tracking_cfg.model_name}')
                 client = mlflow.MlflowClient()
                 last_model_version = client.get_latest_versions(
                     name=mlflow_tracking_cfg.model_name, stages=["None"]
