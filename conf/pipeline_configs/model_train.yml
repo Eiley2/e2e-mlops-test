@@ -1,5 +1,5 @@
 mlflow_params:
-  run_name: "pre_presentacion_train"
+  run_name: "max_depth_increment"
 
 pipeline_params:
   test_size: 0.25
