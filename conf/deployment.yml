@@ -135,6 +135,40 @@ environments:
   prod:
     strict_path_adjustment_policy: true
     jobs:
+      - name: "PROD-telco-churn-model-train-and-deploy"
+        job_clusters:
+          - job_cluster_key: "prod-cluster"
+            <<: *prod-cluster-config
+        tasks:
+          - task_key: "train-model"
+            job_cluster_key: "prod-cluster"
+            spark_python_task:
+              python_file: "file://telco_churn/pipelines/model_train_job.py"
+              parameters:
+                [
+                  "--base-data-params",
+                  "file:fuse://conf/.base_data_params.env",
+                  "--env",
+                  "file:fuse://conf/prod/.prod.env",
+                  "--conf-file",
+                  "file:fuse://conf/pipeline_configs/model_train.yml",
+                ]
+          - task_key: "deploy-model"
+            job_cluster_key: "prod-cluster"
+            depends_on:
+              - task_key: "train-model"
+            spark_python_task:
+              python_file: "file://telco_churn/pipelines/model_deployment_job.py"
+              parameters:
+                [
+                  "--base-data-params",
+                  "file:fuse://conf/.base_data_params.env",
+                  "--env",
+                  "file:fuse://conf/prod/.prod.env",
+                  "--conf-file",
+                  "file:fuse://conf/pipeline_configs/model_deployment.yml",
+                ]
+
       - name: "PROD-telco-churn-demo-setup"
         <<: *prod-cluster-config
         spark_python_task:
